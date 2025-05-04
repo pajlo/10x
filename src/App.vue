@@ -1,15 +1,34 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from './stores/auth';
+import BaseButton from './components/BaseButton.vue';
+import BaseMenu from './components/BaseMenu.vue';
 
-const isMenuOpen = ref(false);
 const router = useRouter();
 const authStore = useAuthStore();
 
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value;
-};
+// Poprawione mapowanie etykiet do rzeczywistych ścieżek
+const menuItems = computed(() => {
+  const items = [
+    { label: 'Strona główna', action: () => router.push('/') }
+  ];
+
+  if (authStore.isAuthenticated) {
+    items.push(
+      { label: 'Moje fiszki', action: () => router.push('/my-flashcards') },
+      { label: 'Sesja nauki', action: () => router.push('/flashcards') },
+      { label: 'Wyloguj', action: logout }
+    );
+  } else {
+    items.push(
+      { label: 'Logowanie', action: () => router.push('/login') },
+      { label: 'Rejestracja', action: () => router.push('/register') }
+    );
+  }
+
+  return items;
+});
 
 const logout = async () => {
   await authStore.logout();
@@ -25,43 +44,43 @@ const logout = async () => {
         <router-link to="/" class="text-2xl font-bold">10x Cards</router-link>
         
         <!-- Menu dla desktopów -->
-        <nav class="hidden md:flex space-x-6">
-          <router-link to="/" class="hover:text-blue-200 transition-colors">Strona główna</router-link>
+        <nav class="hidden md:flex space-x-4">
+          <router-link to="/" class="hover:text-blue-200 transition-colors py-2">
+            Strona główna
+          </router-link>
+          
           <template v-if="authStore.isAuthenticated">
-            <router-link to="/my-flashcards" class="hover:text-blue-200 transition-colors">Moje fiszki</router-link>
-            <router-link to="/flashcards" class="hover:text-blue-200 transition-colors">Sesja nauki</router-link>
+            <router-link to="/my-flashcards" class="hover:text-blue-200 transition-colors py-2">
+              Moje fiszki
+            </router-link>
+            <router-link to="/flashcards" class="hover:text-blue-200 transition-colors py-2">
+              Sesja nauki
+            </router-link>
+            <BaseButton 
+              variant="outline"
+              @click="logout"
+            >
+              Wyloguj
+            </BaseButton>
           </template>
-          <template v-if="!authStore.isAuthenticated">
-            <router-link to="/login" class="hover:text-blue-200 transition-colors">Logowanie</router-link>
-            <router-link to="/register" class="hover:text-blue-200 transition-colors">Rejestracja</router-link>
+          
+          <template v-else>
+            <router-link to="/login" class="hover:text-blue-200 transition-colors py-2">
+              Logowanie
+            </router-link>
+            <router-link to="/register" class="hover:text-blue-200 transition-colors py-2">
+              Rejestracja
+            </router-link>
           </template>
-          <button v-else @click="logout" class="hover:text-blue-200 transition-colors">Wyloguj</button>
         </nav>
         
-        <!-- Przycisk menu dla urządzeń mobilnych -->
+        <!-- Menu mobilne -->
         <div class="md:hidden">
-          <button @click="toggleMenu" class="focus:outline-none">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path v-if="!isMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-              <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-      
-      <!-- Menu mobilne -->
-      <div v-if="isMenuOpen" class="md:hidden bg-blue-700 px-4 py-2">
-        <div class="flex flex-col space-y-2">
-          <router-link @click="toggleMenu" to="/" class="py-1 hover:text-blue-200 transition-colors">Strona główna</router-link>
-          <template v-if="authStore.isAuthenticated">
-            <router-link @click="toggleMenu" to="/my-flashcards" class="py-1 hover:text-blue-200 transition-colors">Moje fiszki</router-link>
-            <router-link @click="toggleMenu" to="/flashcards" class="py-1 hover:text-blue-200 transition-colors">Sesja nauki</router-link>
-          </template>
-          <template v-if="!authStore.isAuthenticated">
-            <router-link @click="toggleMenu" to="/login" class="py-1 hover:text-blue-200 transition-colors">Logowanie</router-link>
-            <router-link @click="toggleMenu" to="/register" class="py-1 hover:text-blue-200 transition-colors">Rejestracja</router-link>
-          </template>
-          <button v-else @click="logout" class="text-left py-1 hover:text-blue-200 transition-colors">Wyloguj</button>
+          <BaseMenu
+            :items="menuItems"
+            buttonContent="Menu"
+            position="right"
+          />
         </div>
       </div>
     </header>
@@ -74,7 +93,7 @@ const logout = async () => {
     <!-- Stopka -->
     <footer class="bg-gray-800 text-white py-4 mt-auto">
       <div class="container mx-auto px-4 text-center">
-        <p>&copy; 2023 10x Cards. Wszystkie prawa zastrzeżone.</p>
+        <p>&copy; 2023 10x Cards. Wszelkie prawa zastrzeżone.</p>
       </div>
     </footer>
   </div>
