@@ -148,3 +148,4 @@ dist
 
 # Test artifacts
 *.spec.js.snap
+playwright-report/index.html
