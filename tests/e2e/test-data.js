@@ -8,10 +8,10 @@
 
 export const TEST_USER = {
   email: 'test@test.pl',
-  password: 'password123'
+  password: 'password123',
 };
 
 export const SAMPLE_FLASHCARD = {
   front: 'Testowa fiszka',
-  back: 'Odpowiedź testowa'
+  back: 'Odpowiedź testowa',
 };

@@ -1,9 +1,9 @@
 // vitest.config.js
-import { defineConfig } from 'vitest/config'
-import vue from '@vitejs/plugin-vue'
-import { fileURLToPath } from 'node:url'
-import { mergeConfig } from 'vite'
-import viteConfig from './vite.config'
+import { defineConfig } from 'vitest/config';
+import vue from '@vitejs/plugin-vue';
+import { fileURLToPath } from 'node:url';
+import { mergeConfig } from 'vite';
+import viteConfig from './vite.config';
 
 export default mergeConfig(
   viteConfig,
@@ -23,5 +23,5 @@ export default mergeConfig(
         '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
     },
-  })
-)
+  }),
+);

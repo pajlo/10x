@@ -1,35 +1,41 @@
 <script setup>
-import { computed } from 'vue'
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+  import { computed } from 'vue';
+  import {
+    Dialog,
+    DialogPanel,
+    DialogTitle,
+    TransitionChild,
+    TransitionRoot,
+  } from '@headlessui/vue';
 
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    required: true
-  },
-  title: {
-    type: String,
-    default: ''
-  },
-  size: {
-    type: String,
-    default: 'md',
-    validator: (value) => ['sm', 'md', 'lg'].includes(value)
-  }
-})
+  const props = defineProps({
+    modelValue: {
+      type: Boolean,
+      required: true,
+    },
+    title: {
+      type: String,
+      default: '',
+    },
+    size: {
+      type: String,
+      default: 'md',
+      validator: (value) => ['sm', 'md', 'lg'].includes(value),
+    },
+  });
 
-const emit = defineEmits(['update:modelValue'])
+  const emit = defineEmits(['update:modelValue']);
 
-const isOpen = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value)
-})
+  const isOpen = computed({
+    get: () => props.modelValue,
+    set: (value) => emit('update:modelValue', value),
+  });
 
-const sizeClasses = {
-  sm: 'max-w-md',
-  md: 'max-w-lg',
-  lg: 'max-w-2xl'
-}
+  const sizeClasses = {
+    sm: 'max-w-md',
+    md: 'max-w-lg',
+    lg: 'max-w-2xl',
+  };
 </script>
 
 <template>
@@ -58,11 +64,16 @@ const sizeClasses = {
             leave-from="opacity-100 scale-100"
             leave-to="opacity-0 scale-95"
           >
-            <DialogPanel :class="['w-full transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all', sizeClasses[size]]">
+            <DialogPanel
+              :class="[
+                'w-full transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all',
+                sizeClasses[size],
+              ]"
+            >
               <DialogTitle v-if="title" class="text-lg font-medium leading-6 text-gray-900 mb-4">
                 {{ title }}
               </DialogTitle>
-              
+
               <div class="mt-2">
                 <slot />
               </div>

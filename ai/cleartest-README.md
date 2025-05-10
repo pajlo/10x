@@ -30,7 +30,7 @@ Skrypt loguje się na konto testowe zdefiniowane w `tests/e2e/test-data.js` i us
 
 ## Integracja z Playwright
 
-Mechanizm może być zintegrowany z Playwright jako część procesu "teardown" - zgodnie z dokumentacją teardown-js.md w folderze `ai`. 
+Mechanizm może być zintegrowany z Playwright jako część procesu "teardown" - zgodnie z dokumentacją teardown-js.md w folderze `ai`.
 
 Zalecane podejście to użycie "Project Dependencies" opisane w dokumentacji, gdzie skrypt czyszczenia danych może być uruchamiany jako projekt o nazwie "cleanup db" po zakończeniu wszystkich testów.
 

@@ -51,28 +51,28 @@
 graph TD
     A[10x-cards] --> B[Components]
     A --> C[Views]
-    
+
     B --> B1[BaseButton.vue]
     B --> B2[BaseCard.vue]
     B --> B3[BaseDialog.vue]
     B --> B4[BaseMenu.vue]
-    
+
     C --> C1[HomeView.vue]
     C --> C2[LoginView.vue]
     C --> C3[RegisterView.vue]
     C --> C4[FlashcardsView.vue]
     C --> C5[MyFlashcardsView.vue]
-    
+
     A --> D[Stores]
     D --> D1[auth.js]
     D --> D2[flashcards.js]
-    
+
     A --> E[Router]
     E --> E1[index.js]
-    
+
     D --> F[Services]
     F --> F1[supabase.js]
-    
+
     F --> G[Database]
     G --> G1[Supabase DB]
 ```
@@ -85,18 +85,18 @@ flowchart TD
     App --> Auth[stores/auth.js]
     App --> BaseButton[components/BaseButton.vue]
     App --> BaseMenu[components/BaseMenu.vue]
-    
+
     Router --> Auth
     Router --> Views[Views/*.vue]
-    
+
     Auth --> Supabase[supabase.js]
-    
+
     Flashcards[stores/flashcards.js] --> Supabase
     Flashcards --> Auth
-    
+
     Views --> Components[components/Base*.vue]
     Views --> Stores[stores/*.js]
-    
+
     subgraph DataFlow[Przepływ danych]
         User --> View
         View --> Store
