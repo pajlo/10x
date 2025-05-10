@@ -15,7 +15,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       const { data } = await supabase.auth.getSession();
-      
+
       if (data.session) {
         user.value = data.session.user;
         isAuthenticated.value = true;
@@ -35,15 +35,15 @@ export const useAuthStore = defineStore('auth', () => {
   const register = async (email, password) => {
     loading.value = true;
     error.value = null;
-    
+
     try {
       const { data, error: authError } = await supabase.auth.signUp({
         email,
-        password
+        password,
       });
-      
+
       if (authError) throw authError;
-      
+
       user.value = data.user;
       isAuthenticated.value = true;
       return { success: true };
@@ -60,15 +60,15 @@ export const useAuthStore = defineStore('auth', () => {
   const login = async (email, password) => {
     loading.value = true;
     error.value = null;
-    
+
     try {
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
-        password
+        password,
       });
-      
+
       if (authError) throw authError;
-      
+
       user.value = data.user;
       isAuthenticated.value = true;
       return { success: true };
@@ -84,7 +84,7 @@ export const useAuthStore = defineStore('auth', () => {
   // Wylogowanie użytkownika
   const logout = async () => {
     loading.value = true;
-    
+
     try {
       await supabase.auth.signOut();
       user.value = null;
@@ -105,6 +105,6 @@ export const useAuthStore = defineStore('auth', () => {
     checkSession,
     register,
     login,
-    logout
+    logout,
   };
 });

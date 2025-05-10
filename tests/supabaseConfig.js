@@ -42,7 +42,7 @@ const getSupabaseConfig = () => {
     console.error('   Upewnij się, że pliki .env lub .env.local zawierają:');
     console.error('   VITE_SUPABASE_URL=... i VITE_SUPABASE_ANON_KEY=...');
     console.error('   Te pliki NIE powinny być przechowywane w repozytorium!');
-    
+
     // Tutaj nie dodajemy twardych danych - jeśli nie znajdzie zmiennych, zgłosi to jako błąd
     throw new Error('Brak wymaganych zmiennych środowiskowych dla Supabase');
   }
@@ -64,22 +64,32 @@ try {
   console.error(`❌ Błąd konfiguracji Supabase: ${error.message}`);
   configError = error;
   // Tworzymy "atrapę" klienta, która będzie zgłaszała błędy przy próbie użycia
-  supabaseNode = new Proxy({}, {
-    get: function(target, prop) {
-      if (prop === 'auth') {
-        return new Proxy({}, {
-          get: function(target, authProp) {
-            return () => {
-              throw new Error('Klient Supabase nie został poprawnie skonfigurowany. Sprawdź zmienne środowiskowe.');
-            };
-          }
-        });
-      }
-      return () => {
-        throw new Error('Klient Supabase nie został poprawnie skonfigurowany. Sprawdź zmienne środowiskowe.');
-      };
-    }
-  });
+  supabaseNode = new Proxy(
+    {},
+    {
+      get: function (_, prop) {
+        if (prop === 'auth') {
+          return new Proxy(
+            {},
+            {
+              get: function () {
+                return () => {
+                  throw new Error(
+                    'Klient Supabase nie został poprawnie skonfigurowany. Sprawdź zmienne środowiskowe.',
+                  );
+                };
+              },
+            },
+          );
+        }
+        return () => {
+          throw new Error(
+            'Klient Supabase nie został poprawnie skonfigurowany. Sprawdź zmienne środowiskowe.',
+          );
+        };
+      },
+    },
+  );
 }
 
 // Eksportujemy zmienne i funkcje

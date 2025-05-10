@@ -3,10 +3,10 @@ import { clearTestData } from './tests/clearTestData.js';
 
 async function run() {
   console.log('🧹 Uruchamiam czyszczenie danych testowych...');
-  
+
   try {
     const result = await clearTestData();
-    
+
     if (result.success) {
       console.log('✅ Pomyślnie wyczyszczono dane testowe:', result.message);
       process.exit(0);

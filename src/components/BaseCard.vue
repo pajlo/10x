@@ -1,32 +1,32 @@
 <script setup>
-import { ref } from 'vue'
-import { Transition } from 'vue'
+  import { ref } from 'vue';
+  import { Transition } from 'vue';
 
-const props = defineProps({
-  flippable: {
-    type: Boolean,
-    default: false
-  },
-  elevation: {
-    type: String,
-    default: 'md',
-    validator: (value) => ['sm', 'md', 'lg'].includes(value)
-  }
-})
+  const props = defineProps({
+    flippable: {
+      type: Boolean,
+      default: false,
+    },
+    elevation: {
+      type: String,
+      default: 'md',
+      validator: (value) => ['sm', 'md', 'lg'].includes(value),
+    },
+  });
 
-const isFlipped = ref(false)
+  const isFlipped = ref(false);
 
-const toggleFlip = () => {
-  if (props.flippable) {
-    isFlipped.value = !isFlipped.value
-  }
-}
+  const toggleFlip = () => {
+    if (props.flippable) {
+      isFlipped.value = !isFlipped.value;
+    }
+  };
 
-const elevationClasses = {
-  sm: 'shadow-sm',
-  md: 'shadow-md',
-  lg: 'shadow-lg'
-}
+  const elevationClasses = {
+    sm: 'shadow-sm',
+    md: 'shadow-md',
+    lg: 'shadow-lg',
+  };
 </script>
 
 <template>
@@ -34,7 +34,7 @@ const elevationClasses = {
     :class="[
       'bg-white rounded-lg overflow-hidden',
       elevationClasses[elevation],
-      { 'cursor-pointer': flippable }
+      { 'cursor-pointer': flippable },
     ]"
     @click="toggleFlip"
   >
@@ -57,7 +57,8 @@ const elevationClasses = {
 </template>
 
 <style scoped>
-.front, .back {
-  @apply p-6;
-}
+  .front,
+  .back {
+    @apply p-6;
+  }
 </style>

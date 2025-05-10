@@ -11,9 +11,9 @@ vi.mock('../../../src/supabase', () => {
         signInWithPassword: vi.fn(),
         signUp: vi.fn(),
         signOut: vi.fn(),
-        getSession: vi.fn()
-      }
-    }
+        getSession: vi.fn(),
+      },
+    },
   };
 });
 
@@ -27,7 +27,7 @@ describe('Auth Store', () => {
     // Tworzy nową instancję Pinia dla każdego testu
     setActivePinia(createPinia());
     store = useAuthStore();
-    
+
     // Resetuje mocki przed każdym testem
     vi.resetAllMocks();
   });
@@ -37,11 +37,11 @@ describe('Auth Store', () => {
       // Przygotowanie danych testowych
       const mockUser = { id: '1', email: 'test@example.com' };
       const mockSession = { user: mockUser };
-      
+
       // Ustawienie mocka aby zwrócił sukces
       supabase.auth.signInWithPassword.mockResolvedValue({
         data: mockSession,
-        error: null
+        error: null,
       });
 
       // Wywołanie testowanej funkcji
@@ -50,7 +50,7 @@ describe('Auth Store', () => {
       // Sprawdzenie czy mock został wywołany z poprawnymi parametrami
       expect(supabase.auth.signInWithPassword).toHaveBeenCalledWith({
         email: 'test@example.com',
-        password: 'password123'
+        password: 'password123',
       });
 
       // Sprawdzenie rezultatu
@@ -65,7 +65,7 @@ describe('Auth Store', () => {
       const errorMessage = 'Invalid login credentials';
       supabase.auth.signInWithPassword.mockResolvedValue({
         data: null,
-        error: { message: errorMessage }
+        error: { message: errorMessage },
       });
 
       // Wywołanie testowanej funkcji

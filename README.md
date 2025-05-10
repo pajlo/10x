@@ -85,6 +85,7 @@ Więcej informacji na temat mechanizmu czyszczenia danych testowych można znale
 Testy jednostkowe znajdują się w katalogu `/tests/unit/` i są organizowane zgodnie ze strukturą kodu aplikacji. Używamy Vitest jako framework testowy z Composition API dla Vue 3.
 
 Przykład testu jednostkowego dla store'a autentykacji:
+
 ```javascript
 // tests/unit/stores/auth.spec.js
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -102,7 +103,7 @@ Testy E2E znajdują się w katalogu `/tests/e2e/` i używają Playwright jako fr
 // tests/e2e/test-data.js
 export const TEST_USER = {
   email: 'test@test.pl',
-  password: 'password123'
+  password: 'password123',
 };
 ```
 
@@ -115,7 +116,7 @@ export class LoginPage {
     this.page = page;
     // Selektory elementów strony
   }
-  
+
   async login(email, password) {
     // Implementacja logowania
   }
@@ -125,11 +126,13 @@ export class LoginPage {
 ## Debugowanie testów
 
 ### Testy jednostkowe
+
 - Użyj `console.log()` do debugowania
 - Uruchom testy w trybie watch
 - Użyj interfejsu UI do wizualizacji testów
 
 ### Testy E2E
+
 - Dodaj `await page.pause()` w kodzie testu, aby zatrzymać test
 - Używaj trybu UI dla krokowego wykonywania testów
 - Analizuj zrzuty ekranu i śledzenie (trace) błędów
