@@ -67,12 +67,12 @@ try {
   supabaseNode = new Proxy(
     {},
     {
-      get: function (target, prop) {
+      get: function (_, prop) {
         if (prop === 'auth') {
           return new Proxy(
             {},
             {
-              get: function (target, authProp) {
+              get: function () {
                 return () => {
                   throw new Error(
                     'Klient Supabase nie został poprawnie skonfigurowany. Sprawdź zmienne środowiskowe.',

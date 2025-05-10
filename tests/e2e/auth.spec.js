@@ -1,5 +1,5 @@
 // tests/e2e/auth.spec.js
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { LoginPage } from './pages/LoginPage';
 import { TEST_USER } from './test-data';
 
