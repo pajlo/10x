@@ -27,11 +27,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          # Wyłączam cache npm, ponieważ powoduje problemy
+          # cache: 'npm'
 
       - name: Instalacja zależności
         run: npm install
-        # Używamy 'npm install' zamiast 'npm ci', ponieważ nie mamy package-lock.json w repozytorium
+        
+      - name: Wyświetl zawartość node_modules
+        run: |
+          echo "Sprawdzam czy zależności zostały zainstalowane:"
+          ls -la node_modules/@supabase || echo "Brak folderu @supabase w node_modules"
 
       - name: Uruchomienie lint
         run: npm run lint:js
@@ -50,14 +55,16 @@ jobs:
 
       - name: Uruchomienie testów E2E
         run: npm run test:e2e
-        # Poprawiono literówkę: test:e2E -> test:e2e
         env: 
           CI: true
 
       - name: Czyszczenie danych testowych
-        run: npm run cleartest
         if: always()
-        # Ten krok będzie uruchomiony po zainstalowaniu zależności, więc powinien działać prawidłowo
+        run: |
+          echo "Instalacja zależności potrzebnych do czyszczenia danych testowych"
+          npm install @supabase/supabase-js
+          echo "Uruchamianie skryptu cleartest"
+          node cleartest.js
 
       - name: Budowanie projektu
         run: npm run build
@@ -71,7 +78,7 @@ jobs:
 
   deploy:
     needs: test-and-build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: success() && (github.ref == 'refs/heads/main' && github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment || 'test' }}
     steps:
