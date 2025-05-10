@@ -30,7 +30,8 @@ jobs:
           cache: 'npm'
 
       - name: Instalacja zależności
-        run: npm ci
+        run: npm install
+        # Używamy 'npm install' zamiast 'npm ci', ponieważ nie mamy package-lock.json w repozytorium
 
       - name: Uruchomienie lint
         run: npm run lint:js
@@ -48,13 +49,15 @@ jobs:
           echo "VITE_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env.local
 
       - name: Uruchomienie testów E2E
-        run: npm run test:e2E
+        run: npm run test:e2e
+        # Poprawiono literówkę: test:e2E -> test:e2e
         env: 
           CI: true
 
       - name: Czyszczenie danych testowych
         run: npm run cleartest
         if: always()
+        # Ten krok będzie uruchomiony po zainstalowaniu zależności, więc powinien działać prawidłowo
 
       - name: Budowanie projektu
         run: npm run build
