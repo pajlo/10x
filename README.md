@@ -47,6 +47,9 @@ npx playwright show-report
 # Uruchomienie konkretnego pliku testowego
 npx playwright test tests/e2e/auth.spec.js
 npx playwright test tests/e2e/flashcards.spec.js
+
+# Czyszczenie danych testowych po testach E2E
+npm run cleartest
 ```
 
 ### Uruchomienie wszystkich testów
@@ -54,6 +57,26 @@ npx playwright test tests/e2e/flashcards.spec.js
 ```bash
 npm test
 ```
+
+## Czyszczenie danych testowych
+
+Projekt zawiera mechanizm do czyszczenia danych testowych wprowadzonych podczas testów E2E.
+
+```bash
+# Usunięcie wszystkich fiszek utworzonych przez konto testowe
+npm run cleartest
+```
+
+Aby skonfigurować mechanizm czyszczenia danych, należy utworzyć plik `.env.local` z danymi dostępowymi do Supabase:
+
+```properties
+VITE_SUPABASE_URL=https://twoj-projekt.supabase.co
+VITE_SUPABASE_ANON_KEY=twoj-klucz-dostepowy
+```
+
+> **Uwaga**: Plik `.env.local` powinien być dodany do `.gitignore` i nie powinien być przechowywany w repozytorium.
+
+Więcej informacji na temat mechanizmu czyszczenia danych testowych można znaleźć w pliku [ai/cleartest-README.md](./ai/cleartest-README.md).
 
 ## Struktura testów
 
