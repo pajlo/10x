@@ -87,3 +87,43 @@ jobs:
         with:
           name: build-files
           path: dist
+
+      - name: Wyświetl zawartość katalogu do wdrożenia
+        run: ls -la dist/
+
+      - name: Przygotowanie plików produkcyjnych
+        run: |
+          echo "Przygotowuję zmienne środowiskowe dla produkcji"
+          # Utwórz plik .env dla środowiska produkcyjnego w dist
+          echo "VITE_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > dist/.env
+          echo "VITE_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> dist/.env
+
+      - name: Wdrożenie na serwer produkcyjny przez SSH
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          source: "dist/"
+          target: ${{ secrets.DEPLOY_PATH }}
+          strip_components: 1
+          rm: true # usuwa zawartość katalogu docelowego przed wdrożeniem
+
+      - name: Wykonaj komendy po wdrożeniu
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            echo "Wdrażanie zakończone pomyślnie na ścieżce ${{ secrets.DEPLOY_PATH }}"
+            
+            # Jeśli używasz serwera Nginx, możesz dodać polecenie do przeładowania konfiguracji
+            # sudo systemctl reload nginx
+            
+            # Ustaw odpowiednie uprawnienia
+            chmod -R 755 ${{ secrets.DEPLOY_PATH }}
+            
+            echo "Wdrożenie zostało zakończone o $(date)"
