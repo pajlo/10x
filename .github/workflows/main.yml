@@ -1,0 +1,79 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Środowisko do wdrożenia'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - production
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout kodu
+        uses: actions/checkout@v4
+
+      - name: Konfiguracja Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalacja zależności
+        run: npm ci
+
+      - name: Uruchomienie lint
+        run: npm run lint:js
+        continue-on-error: true
+
+      - name: Uruchomienie testów jednostkowych
+        run: npm run test:unit
+
+      - name: Instalacja Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Przygotowanie zmiennych środowiskowych dla testów
+        run: |
+          echo "VITE_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env.local
+          echo "VITE_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env.local
+
+      - name: Uruchomienie testów E2E
+        run: npm run test:e2E
+        env: 
+          CI: true
+
+      - name: Czyszczenie danych testowych
+        run: npm run cleartest
+        if: always()
+
+      - name: Budowanie projektu
+        run: npm run build
+
+      - name: Zachowanie artefaktów budowania
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: dist/
+          retention-days: 7
+
+  deploy:
+    needs: test-and-build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'test' }}
+    steps:
+      - name: Pobierz artefakty budowania
+        uses: actions/download-artifact@v4
+        with:
+          name: build-files
+          path: dist
