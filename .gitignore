@@ -134,3 +134,17 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Testing directories and files
+# Playwright
+/playwright-report/
+/test-results/
+/playwright/.cache/
+
+# Vitest
+/html/
+/coverage/
+/.vitest-cache/
+
+# Test artifacts
+*.spec.js.snap
