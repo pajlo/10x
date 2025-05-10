@@ -72,7 +72,7 @@ const confirmDelete = async () => {
   <div class="my-flashcards">
     <div class="mb-8 flex justify-between items-center">
       <h1 class="text-3xl font-bold text-blue-700">Moje fiszki</h1>
-      <BaseButton @click="showAddDialog = true">
+      <BaseButton @click="showAddDialog = true" data-testid="add-flashcard-btn">
         Dodaj fiszkę
       </BaseButton>
     </div>
@@ -96,11 +96,12 @@ const confirmDelete = async () => {
     </div>
 
     <!-- Lista fiszek -->
-    <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-testid="flashcards-list">
       <div
         v-for="flashcard in flashcardsStore.flashcards"
         :key="flashcard.id"
         class="bg-white rounded-lg shadow-md overflow-hidden"
+        data-testid="flashcard-item"
       >
         <div class="p-5 border-b">
           <h3 class="font-semibold text-lg mb-2">Pytanie:</h3>
@@ -136,6 +137,7 @@ const confirmDelete = async () => {
     <BaseDialog
       v-model="showAddDialog"
       :title="editingFlashcard ? 'Edytuj fiszkę' : 'Dodaj nową fiszkę'"
+      data-testid="flashcard-dialog"
     >
       <div v-if="formError" class="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
         {{ formError }}
@@ -150,6 +152,7 @@ const confirmDelete = async () => {
             rows="3"
             class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
             placeholder="Wpisz pytanie lub definicję..."
+            data-testid="front-input"
           ></textarea>
         </div>
 
@@ -161,6 +164,7 @@ const confirmDelete = async () => {
             rows="3"
             class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
             placeholder="Wpisz odpowiedź..."
+            data-testid="back-input"
           ></textarea>
         </div>
       </div>
@@ -170,11 +174,13 @@ const confirmDelete = async () => {
           <BaseButton
             variant="secondary"
             @click="showAddDialog = false"
+            data-testid="cancel-flashcard-btn"
           >
             Anuluj
           </BaseButton>
           <BaseButton
             @click="handleSave"
+            data-testid="save-flashcard-btn"
           >
             {{ editingFlashcard ? 'Zapisz zmiany' : 'Dodaj fiszkę' }}
           </BaseButton>

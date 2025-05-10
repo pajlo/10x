@@ -7,47 +7,66 @@ export class MyFlashcardsPage {
    */
   constructor(page) {
     this.page = page;
-    // Przycisk na głównej stronie, który otwiera modal
-    this.addButton = page.getByRole('button', { name: 'Dodaj fiszkę', exact: true }).first();
     
-    // Selektory dla formularza w modalu
-    this.dialog = page.locator('dialog, div[role="dialog"]');
-    this.frontInput = page.locator('textarea, input').nth(0);
-    this.backInput = page.locator('textarea, input').nth(1);
-    // Przycisk w modalu do zapisywania fiszki
-    this.saveButton = page.locator('dialog button:has-text("Dodaj fiszkę"), div[role="dialog"] button:has-text("Dodaj fiszkę")');
-    this.cancelButton = page.getByRole('button', { name: 'Anuluj' });
+    // Główny przycisk dodawania fiszek
+    this.addButton = page.getByRole('button', { name: 'Dodaj fiszkę' }).first();
     
-    this.flashcardsList = page.locator('.flashcard-item, div[class*="flashcard"]');
+    // Elementy modalu - używamy tytułu zamiast samego dialogu, bo ten może być uznany za ukryty
+    this.dialogTitle = page.getByRole('heading', { name: 'Dodaj nową fiszkę' });
+    
+    // Pola formularza - korzystamy z atrybutów id i labels
+    this.frontInput = page.locator('#front');
+    this.backInput = page.locator('#back');
+    
+    // Przyciski - korzystamy z data-testid
+    this.cancelButton = page.getByTestId('cancel-flashcard-btn');
+    this.saveButton = page.getByTestId('save-flashcard-btn');
+    
+    // Elementy do weryfikacji fiszki
+    this.flashcardItem = page.locator('.bg-white.rounded-lg.shadow-md');
   }
 
   async goto() {
     await this.page.goto('/my-flashcards');
+    // Daj stronie chwilę na załadowanie
+    await this.page.waitForLoadState('networkidle');
   }
 
   async addFlashcard(front, back) {
-    // Kliknij przycisk, aby otworzyć modal
+    // 1. Kliknij przycisk dodawania fiszki
     await this.addButton.click();
     
-    // Poczekaj na pojawienie się modalu
-    await this.page.waitForSelector('dialog, div[role="dialog"]', { state: 'visible', timeout: 5000 });
+    // 2. Poczekaj na tytuł dialogu zamiast na sam dialog
+    await this.dialogTitle.waitFor({ state: 'visible', timeout: 5000 });
     
-    // Wypełnij pola formularza
+    // 3. Dodaj krótką pauzę, aby elementy formularza były w pełni dostępne
+    await this.page.waitForTimeout(500);
+    
+    // 4. Wypełnij pola formularza
     await this.frontInput.fill(front);
     await this.backInput.fill(back);
     
-    // Debugowanie - dodaje pauzę, aby zobaczyć co się dzieje
-    // await this.page.pause();
+    // 5. Kliknij przycisk zapisywania używając data-testid
+    await this.saveButton.click();
     
-    // Kliknij przycisk zapisywania w modalu
-    await this.saveButton.click({ timeout: 10000 });
+    // 6. Daj czas na przetworzenie i zamknięcie modalu
+    await this.page.waitForTimeout(1000);
   }
 
   async expectFlashcardExists(front, back) {
-    // Szukamy fiszki z podanym tekstem na przodzie
-    const flashcard = this.page.locator('div', { hasText: front }).first();
+    // Daj więcej czasu na odświeżenie interfejsu
+    await this.page.waitForTimeout(1000);
     
-    // Czekamy aż fiszka będzie widoczna (maksymalnie 5 sekund)
-    await expect(flashcard).toBeVisible({ timeout: 5000 });
+    // Szukaj tekstu fiszki na stronie
+    const flashcardElement = this.page.locator('.bg-white.rounded-lg.shadow-md', {
+      has: this.page.getByText(front, { exact: false })
+    });
+    
+    // Weryfikuj czy fiszka jest widoczna
+    await expect(flashcardElement).toBeVisible({ timeout: 10000 });
+    
+    // Weryfikuj czy zawiera również tekst odpowiedzi
+    const hasAnswerText = await flashcardElement.getByText(back, { exact: false }).isVisible();
+    expect(hasAnswerText).toBeTruthy();
   }
 }
