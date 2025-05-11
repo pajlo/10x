@@ -1,3 +1,4 @@
+/* eslint-env deno */
 // Edge Function dla Supabase do generowania fiszek przy użyciu OpenAI API
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { OpenAI } from 'https://esm.sh/openai@4.0.0';
