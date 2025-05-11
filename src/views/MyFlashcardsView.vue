@@ -5,10 +5,12 @@
   import BaseButton from '../components/BaseButton.vue';
   import BaseDialog from '../components/BaseDialog.vue';
   import BaseCard from '../components/BaseCard.vue';
+  import FlashcardGenerator from '../components/FlashcardGenerator.vue';
 
   const flashcardsStore = useFlashcardsStore();
   const authStore = useAuthStore();
 
+  const activeTab = ref('my-flashcards'); // 'my-flashcards' lub 'generate'
   const showAddDialog = ref(false);
   const showDeleteDialog = ref(false);
   const editingFlashcard = ref(null);
@@ -76,74 +78,113 @@
   <div class="my-flashcards">
     <div class="mb-8 flex justify-between items-center">
       <h1 class="text-3xl font-bold text-blue-700">Moje fiszki</h1>
-      <BaseButton @click="showAddDialog = true" data-testid="add-flashcard-btn">
-        Dodaj fiszkę
-      </BaseButton>
-    </div>
-
-    <!-- Loading spinner -->
-    <div v-if="flashcardsStore.loading" class="text-center py-12">
-      <div
-        class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"
-      ></div>
-      <p class="mt-4 text-gray-600">Ładowanie fiszek...</p>
-    </div>
-
-    <!-- Brak fiszek -->
-    <div v-else-if="!hasFlashcards" class="text-center py-16 bg-white rounded-lg shadow-md">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-16 w-16 mx-auto text-gray-400 mb-4"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
-        />
-      </svg>
-      <h2 class="text-xl font-medium text-gray-600 mb-2">Brak fiszek</h2>
-      <p class="text-gray-500 mb-4">Rozpocznij naukę dodając swoją pierwszą fiszkę</p>
-      <BaseButton @click="showAddDialog = true"> Dodaj fiszkę </BaseButton>
-    </div>
-
-    <!-- Lista fiszek -->
-    <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-testid="flashcards-list">
-      <div
-        v-for="flashcard in flashcardsStore.flashcards"
-        :key="flashcard.id"
-        class="bg-white rounded-lg shadow-md overflow-hidden"
-        data-testid="flashcard-item"
-      >
-        <div class="p-5 border-b">
-          <h3 class="font-semibold text-lg mb-2">Pytanie:</h3>
-          <p>{{ flashcard.question || flashcard.front }}</p>
-        </div>
-        <div class="p-5">
-          <h3 class="font-semibold text-lg mb-2">Odpowiedź:</h3>
-          <p>{{ flashcard.answer || flashcard.back }}</p>
-        </div>
-        <div class="px-5 py-3 bg-gray-50 flex justify-end gap-2">
-          <BaseButton variant="secondary" size="sm" @click="showEditDialog(flashcard)">
-            Edytuj
-          </BaseButton>
-          <BaseButton
-            variant="danger"
-            size="sm"
-            @click="
-              () => {
-                flashcardToDelete = flashcard;
-                showDeleteDialog = true;
-              }
-            "
+      <div class="flex items-center gap-4">
+        <div class="flex rounded-md shadow-sm" role="group">
+          <button
+            type="button"
+            class="px-4 py-2 text-sm font-medium rounded-l-lg"
+            :class="activeTab === 'my-flashcards' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+            @click="activeTab = 'my-flashcards'"
           >
-            Usuń
+            Moje fiszki
+          </button>
+          <button
+            type="button"
+            class="px-4 py-2 text-sm font-medium rounded-r-lg"
+            :class="activeTab === 'generate' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+            @click="activeTab = 'generate'"
+          >
+            Generuj z AI
+          </button>
+        </div>
+        <BaseButton 
+          v-if="activeTab === 'my-flashcards'" 
+          @click="showAddDialog = true" 
+          data-testid="add-flashcard-btn"
+        >
+          Dodaj fiszkę
+        </BaseButton>
+      </div>
+    </div>
+
+    <!-- Zakładka z istniejącymi fiszkami -->
+    <div v-if="activeTab === 'my-flashcards'">
+      <!-- Loading spinner -->
+      <div v-if="flashcardsStore.loading" class="text-center py-12">
+        <div
+          class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"
+        ></div>
+        <p class="mt-4 text-gray-600">Ładowanie fiszek...</p>
+      </div>
+
+      <!-- Brak fiszek -->
+      <div v-else-if="!hasFlashcards" class="text-center py-16 bg-white rounded-lg shadow-md">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-16 w-16 mx-auto text-gray-400 mb-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+          />
+        </svg>
+        <h2 class="text-xl font-medium text-gray-600 mb-2">Brak fiszek</h2>
+        <p class="text-gray-500 mb-4">Rozpocznij naukę dodając swoją pierwszą fiszkę</p>
+        <div class="flex gap-3 justify-center">
+          <BaseButton @click="showAddDialog = true">
+            Dodaj fiszkę ręcznie
+          </BaseButton>
+          <BaseButton variant="secondary" @click="activeTab = 'generate'">
+            Generuj z AI
           </BaseButton>
         </div>
       </div>
+
+      <!-- Lista fiszek -->
+      <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-testid="flashcards-list">
+        <div
+          v-for="flashcard in flashcardsStore.flashcards"
+          :key="flashcard.id"
+          class="bg-white rounded-lg shadow-md overflow-hidden"
+          data-testid="flashcard-item"
+        >
+          <div class="p-5 border-b">
+            <h3 class="font-semibold text-lg mb-2">Pytanie:</h3>
+            <p>{{ flashcard.question || flashcard.front }}</p>
+          </div>
+          <div class="p-5">
+            <h3 class="font-semibold text-lg mb-2">Odpowiedź:</h3>
+            <p>{{ flashcard.answer || flashcard.back }}</p>
+          </div>
+          <div class="px-5 py-3 bg-gray-50 flex justify-end gap-2">
+            <BaseButton variant="secondary" size="sm" @click="showEditDialog(flashcard)">
+              Edytuj
+            </BaseButton>
+            <BaseButton
+              variant="danger"
+              size="sm"
+              @click="
+                () => {
+                  flashcardToDelete = flashcard;
+                  showDeleteDialog = true;
+                }
+              "
+            >
+              Usuń
+            </BaseButton>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zakładka do generowania fiszek -->
+    <div v-else-if="activeTab === 'generate'">
+      <FlashcardGenerator />
     </div>
 
     <!-- Dialog dodawania/edycji -->

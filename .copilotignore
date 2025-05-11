@@ -1,0 +1,15 @@
+*.env
+*.env.*
+!.env.example
+# Local development files
+
+# Pliki zawierające dane wrażliwe i konfiguracyjne
+**/secrets.json
+**/credentials.json
+**/*.pem
+**/*.key
+**/*.cert
+**/*.cer
+**/*.p12
+**/*.pfx
+**/*.keystore
