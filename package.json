@@ -23,6 +23,7 @@
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
     "@supabase/supabase-js": "^2.39.0",
+    "openai": "^4.98.0",
     "pinia": "^2.1.7",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5"

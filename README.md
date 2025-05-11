@@ -2,6 +2,29 @@
 
 Aplikacja do zarządzania i nauki z fiszkami edukacyjnymi.
 
+## O projekcie
+
+10x Cards to aplikacja do tworzenia i zarządzania zestawami fiszek edukacyjnych. Główne funkcje:
+
+- Automatyczne generowanie fiszek przy użyciu AI na podstawie dostarczonego tekstu
+- Ręczne tworzenie, edycja i usuwanie fiszek
+- System nauki oparty na algorytmie spaced repetition (SuperMemo/SM-2)
+- Pełna autentykacja użytkowników
+
+Projekt spełnia wszystkie wymagania zaliczeniowe kursu 10xDevs.pl:
+- ✅ Obsługa logowania użytkownika (Supabase Auth)
+- ✅ Podstawowa logika biznesowa (generowanie i zarządzanie fiszkami)
+- ✅ Zarządzanie danymi CRUD (tworzenie, odczyt, aktualizacja i usuwanie fiszek)
+- ✅ Kompletne testy jednostkowe i E2E
+- ✅ Konfiguracja CI/CD (GitHub Actions)
+
+## Stack technologiczny
+
+- **Frontend**: Vue.js 3 (Composition API), Vite, Tailwind CSS, Pinia, Vue Router
+- **Backend**: Supabase (PostgreSQL, system autentykacji, Row Level Security)
+- **API**: OpenAI API (generowanie fiszek), biblioteka implementująca algorytm SuperMemo/SM-2
+- **Testy**: Vitest (testy jednostkowe), Playwright (testy E2E)
+
 ## Instalacja
 
 ```bash
@@ -11,6 +34,18 @@ npm install
 # Uruchomienie serwera deweloperskiego
 npm run dev
 ```
+
+## Konfiguracja
+
+Aby poprawnie skonfigurować aplikację, należy utworzyć plik `.env.local` z odpowiednimi zmiennymi środowiskowymi:
+
+```properties
+VITE_SUPABASE_URL=https://twoj-projekt.supabase.co
+VITE_SUPABASE_ANON_KEY=twoj-klucz-dostepowy
+VITE_OPENAI_API_KEY=twoj-klucz-api-openai
+```
+
+> **Uwaga**: Plik `.env.local` powinien być dodany do `.gitignore` i nie powinien być przechowywany w repozytorium.
 
 ## Uruchamianie testów
 
@@ -136,3 +171,28 @@ export class LoginPage {
 - Dodaj `await page.pause()` w kodzie testu, aby zatrzymać test
 - Używaj trybu UI dla krokowego wykonywania testów
 - Analizuj zrzuty ekranu i śledzenie (trace) błędów
+
+## CI/CD
+
+Projekt zawiera konfigurację GitHub Actions do automatycznego uruchamiania testów, lintowania kodu i sprawdzania formatowania po każdym pushu do repozytorium.
+
+Aby zobaczyć status CI/CD, przejdź do zakładki "Actions" w repozytorium GitHub.
+
+Główne elementy CI/CD:
+- Automatyczne uruchamianie testów jednostkowych i E2E
+- Weryfikacja jakości kodu (linting)
+- Sprawdzanie formatowania kodu
+
+## Funkcje aplikacji
+
+### Generowanie fiszek z pomocą AI
+
+Aplikacja umożliwia wklejenie tekstu (np. fragmentu podręcznika) i automatyczne wygenerowanie zestawu fiszek przy pomocy modeli językowych. Wygenerowane fiszki można zaakceptować, edytować lub odrzucić.
+
+### Zarządzanie fiszkami
+
+Użytkownicy mogą tworzyć, edytować i usuwać fiszki. Wszystkie fiszki są powiązane z kontem użytkownika i dostępne tylko dla niego.
+
+### Nauka z algorytmem powtórek
+
+Aplikacja wykorzystuje algorytm spaced repetition do efektywnej nauki z fiszkami. System dostosowuje częstotliwość pokazywania poszczególnych fiszek na podstawie oceny użytkownika.

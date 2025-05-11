@@ -52,6 +52,7 @@ jobs:
         run: |
           echo "VITE_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env.local
           echo "VITE_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env.local
+          echo "VITE_OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env.local
 
       - name: Uruchomienie testów E2E
         run: npm run test:e2e
@@ -68,6 +69,10 @@ jobs:
 
       - name: Budowanie projektu
         run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Zachowanie artefaktów budowania
         uses: actions/upload-artifact@v4
@@ -97,9 +102,10 @@ jobs:
           # Utwórz plik .env dla środowiska produkcyjnego w dist
           echo "VITE_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > dist/.env
           echo "VITE_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> dist/.env
+          echo "VITE_OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> dist/.env
 
-      # Wdrożenie przez FTP zamiast SSH
-      - name: Wdrożenie na serwer przez FTP
+      # Wdrożenie przez FTP
+      - name: Wdrożenie frontendowych plików na serwer przez FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
