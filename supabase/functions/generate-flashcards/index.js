@@ -1,3 +1,4 @@
+/* eslint-env deno */
 // Edge Function dla Supabase do generowania fiszek przy użyciu OpenAI API
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { OpenAI } from 'https://esm.sh/openai@4.0.0';
@@ -5,6 +6,8 @@ import { OpenAI } from 'https://esm.sh/openai@4.0.0';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400',
 };
 
 Deno.serve(async (req) => {
@@ -52,19 +55,39 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Dodaj więcej logów dotyczących autoryzacji do debugowania
+    console.log('Otrzymany nagłówek autoryzacji:', authHeader.substring(0, 15) + '...');
+
     // Sprawdź token użytkownika
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    const { data, error: userError } = await supabase.auth.getUser(token);
 
-    if (userError || !user) {
+    if (userError) {
+      console.error('Błąd weryfikacji użytkownika:', userError);
       return new Response(
-        JSON.stringify({ error: 'Nieprawidłowy token' }),
+        JSON.stringify({ 
+          error: 'Nieprawidłowy token', 
+          details: userError.message 
+        }),
         {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 401,
         }
       );
     }
+
+    if (!data.user) {
+      console.error('Brak użytkownika dla danego tokenu');
+      return new Response(
+        JSON.stringify({ error: 'Nieprawidłowy token - nie znaleziono użytkownika' }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401,
+        }
+      );
+    }
+
+    console.log('Zweryfikowano użytkownika:', data.user.id);
 
     // Pobierz dane z ciała żądania
     const requestData = await req.json();
