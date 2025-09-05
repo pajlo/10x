@@ -82,7 +82,7 @@
     <!-- Stopka -->
     <footer class="bg-gray-800 text-white py-4 mt-auto">
       <div class="container mx-auto px-4 text-center">
-        <p>&copy; 2023 10x Cards. Wszelkie prawa zastrzeżone.</p>
+        <p>&copy; 2025 10x Cards. Wszelkie prawa zastrzeżone.</p>
       </div>
     </footer>
   </div>

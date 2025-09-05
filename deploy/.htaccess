@@ -1,0 +1,11 @@
+# Apache - rewrite dla SPA
+RewriteEngine On
+RewriteBase /
+
+# Jeżeli żądany plik/dir istnieje, zwróć go
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# W przeciwnym razie zwróć index.html
+RewriteRule ^ /index.html [L]
