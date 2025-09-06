@@ -2,7 +2,7 @@
   <div class="bg-white p-6 rounded-lg shadow-md">
     <h2 class="text-2xl font-semibold mb-4">Generuj fiszki z tekstem</h2>
     <p class="mb-4 text-gray-600">
-      Wklej tekst (min. 1000, max. 10 000 znaków) poniżej, aby wygenerować propozycje fiszek
+      Wklej tekst (min. 100, max. 10 000 znaków) poniżej, aby wygenerować propozycje fiszek
       przy użyciu sztucznej inteligencji.
     </p>
 
@@ -15,8 +15,8 @@
       ></textarea>
       <div class="flex justify-between text-sm text-gray-500 mt-2">
         <span>{{ charactersCount }} / 10 000 znaków</span>
-        <span v-if="charactersCount < 1000" class="text-red-500">
-          Wymagane minimum 1000 znaków
+        <span v-if="charactersCount < 100" class="text-red-500">
+          Wymagane minimum 100 znaków
         </span>
       </div>
     </div>
@@ -178,7 +178,7 @@ const charactersCount = computed(() => inputText.value.length);
 
 // Sprawdzanie warunków do generowania
 const canGenerate = computed(() => 
-  charactersCount.value >= 1000 && charactersCount.value <= 10000
+  charactersCount.value >= 100 && charactersCount.value <= 10000
 );
 
 // Skrót do stanu generowania

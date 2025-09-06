@@ -109,41 +109,52 @@ Deno.serve(async (req) => {
     });
 
     // Wyślij żądanie do OpenAI
-    const prompt = `Wygeneruj ${count} fiszek edukacyjnych na podstawie poniższego tekstu. 
-    Każda fiszka powinna składać się z pytania (przód) i odpowiedzi (tył).
-    Pytania powinny dotyczyć najważniejszych koncepcji, definicji lub faktów z tekstu.
-    Odpowiedzi powinny być zwięzłe, ale kompletne.
-    
-    Format odpowiedzi powinien być w formacie JSON:
-    [
-      { "front": "Pytanie 1", "back": "Odpowiedź 1" },
-      { "front": "Pytanie 2", "back": "Odpowiedź 2" }
-    ]
+    const systemPrompt = `Jesteś ekspertem-nauczycielem angielskiego, który tworzy materiały do nauki dla swojego ucznia na poziomie B1 na podstawie własnego planu lekcji.
+
+Zanim cokolwiek wygenerujesz, postępuj według następującego wewnętrznego procesu myślowego:
+1.  **Analiza Persony:** "Muszę myśleć jak nauczyciel tworzący materiały dla ucznia, a nie dla siebie."
+2.  **Skanowanie i Filtrowanie:** "Przejrzę plan i mentalnie odrzucę wszystko, co jest dla mnie (cele, czas, struktura)."
+3.  **Ekstrakcja Treści dla Ucznia:** "Wyodrębnię tylko kluczowe materiały: słownictwo, zasady gramatyczne, przykłady zdań."
+4.  **Generowanie Fiszek:** "Na podstawie tylko i wyłącznie wyodrębnionej treści, stworzę fiszki, przekształcając np. punkty gramatyczne w ćwiczenia."
+
+CRITICAL RULES:
+- NIE TWORZ fiszek, które opisują lekcję (np. 'Jaki jest cel lekcji?').
+- TWÓRZ TYLKO fiszki, których uczeń może użyć do nauki.
+
+Format odpowiedzi musi być JSON, który zawiera listę obiektów fiszek.
+
+Przykład dobrej fiszki ze słownictwem:
+{
+  "front": "What does 'ubiquitous' mean?",
+  "back": "Present, appearing, or found everywhere."
+}
+
+Przykład dobrej fiszki z gramatyką:
+{
+  "front": "Complete the sentence with the correct form of 'be': 'She ___ a doctor.'",
+  "back": "is"
+}
+`;
+
+    const userPrompt = `Wygeneruj ${count} fiszek edukacyjnych na podstawie poniższego tekstu.
     
     Tekst do analizy:
     ${text}`;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4o',
       messages: [
-        { role: 'system', content: 'Jesteś asystentem pomagającym tworzyć wysokiej jakości fiszki edukacyjne.' },
-        { role: 'user', content: prompt }
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
       ],
-      temperature: 0.7,
+      response_format: { type: 'json_object' },
+      temperature: 0.5,
       max_tokens: 1500,
     });
 
     // Parsowanie odpowiedzi
-    const content = response.choices[0].message.content;
-    const jsonStartIndex = content.indexOf('[');
-    const jsonEndIndex = content.lastIndexOf(']') + 1;
-    
-    if (jsonStartIndex === -1 || jsonEndIndex === -1) {
-      throw new Error('Nie udało się przetworzyć odpowiedzi API');
-    }
-    
-    const jsonString = content.substring(jsonStartIndex, jsonEndIndex);
-    const flashcards = JSON.parse(jsonString);
+    const flashcardsData = JSON.parse(response.choices[0].message.content);
+    const flashcards = flashcardsData.flashcards; // Zakładając, że klucz to "flashcards"
 
     // Zwróć wygenerowane fiszki
     return new Response(
